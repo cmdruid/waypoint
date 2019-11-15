@@ -1,0 +1,4 @@
+Flask
+ask_sdk_webservice_support
+flask-ask-sdk
+requests
