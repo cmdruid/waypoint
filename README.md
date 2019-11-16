@@ -17,7 +17,7 @@ I currently work with enterprise-class systems for security and and access contr
 
 This is my first time participating in a hackathon event and developing a real-world software project. I'm diving into the experience in order to make a lot initial mistakes and learn valuable lessons along the way. Please bear with me as I may have no idea what I'm doing at first! However I'm a quick learner!
 
-These were my own design requirements when first put together this project.
+In regards to the design motivations of this project, these were my ideal requirements:
 
 * The project should honor the intentions and scope of the hackathon event, as outlined here.
 * The functionality should be competitive so that fellow contributors can have a real stake in the contest.
@@ -29,12 +29,12 @@ Feel free to give me any criticism or feedback you think may help. I'm grateful 
 
 ## Technologies
 This project uses the following:
-[Amazon Alexa Developers Console](https://developer.amazon.com/en-US/alexa)
-[Alexa Skills SDK for Python](https://github.com/alexa/alexa-skills-kit-sdk-for-python)
-[Location Services for Alexa Skills](https://developer.amazon.com/docs/custom-skills/location-services-for-alexa-skills.html)
-[Navigation Management for Alexa Skills](https://developer.amazon.com/docs/custom-skills/navigation-management-for-alexa-skills.html)
-[NREL Developer Network: Alternative Fuel Station Database](https://developer.nrel.gov/docs/transportation/alt-fuel-stations-v1/)
-[HERE Developer API and SDKs](https://developer.here.com/documentation)
+* [Amazon Alexa Developers Console](https://developer.amazon.com/en-US/alexa)
+* [Alexa Skills SDK for Python](https://github.com/alexa/alexa-skills-kit-sdk-for-python)
+* [Location Services for Alexa Skills](https://developer.amazon.com/docs/custom-skills/location-services-for-alexa-skills.html)
+* [Navigation Management for Alexa Skills](https://developer.amazon.com/docs/custom-skills/navigation-management-for-alexa-skills.html)
+* [NREL Developer Network: Alternative Fuel Station Database](https://developer.nrel.gov/docs/transportation/alt-fuel-stations-v1/)
+* [HERE Developer API and SDKs](https://developer.here.com/documentation)
 
 ## Getting Started
 This section is still in development. 
@@ -64,10 +64,10 @@ Currently my server is setup and running behind a FQDN with a valid SSL certific
 Will update this in the future.
 
 ## Resources
-[Alexa Skills Kit SDK for Python Documentation](https://developer.amazon.com/docs/alexa-skills-kit-sdk-for-python/overview.html)
-[Alexa Design Guide](https://developer.amazon.com/docs/alexa-design/get-started.html)
-[Best Practices for Designing Alexa Skills for Automotive](https://developer.amazon.com/docs/custom-skills/best-practices-for-designing-alexa-skills-for-automotive.html)
-[GET/POST Requests using Python](https://www.geeksforgeeks.org/get-post-requests-using-python/)
+* [Alexa Skills Kit SDK for Python Documentation](https://developer.amazon.com/docs/alexa-skills-kit-sdk-for-python/overview.html)
+* [Alexa Design Guide](https://developer.amazon.com/docs/alexa-design/get-started.html)
+* [Best Practices for Designing Alexa Skills for Automotive](https://developer.amazon.com/docs/custom-skills/best-practices-for-designing-alexa-skills-for-automotive.html)
+* [GET/POST Requests using Python](https://www.geeksforgeeks.org/get-post-requests-using-python/)
 
 ## Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
