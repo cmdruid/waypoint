@@ -1,0 +1,26 @@
+# ----------------------------------------------------------------------- #
+# This configuration file uses the YAML format. Read more about it here:  #
+# https://stackabuse.com/reading-and-writing-yaml-to-a-file-in-python/    #
+# ----------------------------------------------------------------------- #
+
+Alexa:
+# Settings for Alexa SDK.
+  SKILL_ID:
+
+NREL:
+# Settings for NREL Alternative Fuel Database.
+  BASE_URL: https://developer.nrel.gov/api/alt-fuel-stations/v1/nearest.json
+  API_KEY:
+
+HERE:
+# Settings for HERE Developer's API.
+  BASE_URL: https://route.api.here.com/routing/7.2/calculateroute.json
+  APP_ID:
+  APP_CODE:
+  
+Debug:
+# Settings for our debugger.
+  debugMode: True
+  localMode: True
+  Lat: 47.6221978
+  Long: -122.3387421
