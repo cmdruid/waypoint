@@ -1,4 +1,4 @@
-# automobilityla2019
+# FindChargingStation
 This project is being developed for the Automobility LA 2019 Hackathon. This project aims to assist drivers of electric vehicles, via voice-guided assistance, with navigation and trip-planning when it comes to charging their vehicle.
 
 ## Introduction
