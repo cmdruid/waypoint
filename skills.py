@@ -7,12 +7,9 @@ request and construct a response to send back to the alexa service.
 ============================================================================ """
 
 # We need to import some stuff
-<<<<<<< HEAD
-import json
-=======
+
 import requests, json
 
->>>>>>> dev/MathewsApproach
 from config import logger, settings
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
