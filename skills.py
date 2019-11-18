@@ -130,14 +130,6 @@ class GetStationHandler(AbstractRequestHandler):
             with open('instance/stations.json', 'w') as writer:
                 writer.write(str(station_list))
 
-        # Parse out the junk values that we do not need.
-        logger.debug("Cleaning up station list...")
-        station_list = parse_station_list(station_list)
-        logger.debug("Cleaning complete. Dumping file to disk...")
-        if debugMode and station_list:
-            with open('instance/station_list.json', 'w') as writer:
-                writer.write(str(station_list))
-
         # Pick the top station. We'll have the user do this later.
         select_station = station_list[1]
 
