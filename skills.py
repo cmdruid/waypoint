@@ -7,6 +7,7 @@ request and construct a response to send back to the alexa service.
 ============================================================================ """
 
 # We need to import some stuff
+import json
 from config import logger, settings
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
@@ -23,9 +24,11 @@ loc_debug = settings['Debug']['Lat'], settings['Debug']['Long']
 
 # This is where we'll store our response dialogue strings. This is a bad design.
 # We need to move these to a separate file.
-WELCOME_MSG = """ Welcome to my charging station skill. You can say things like,
-           find me the nearest charging station, or Id like to stop at a
-           charging station with coffee nearby. """
+WELCOME_MSG = "Welcome to my charging station skill."
+
+# You can say things like,
+#           find me the nearest charging station, or Id like to stop at a
+#           charging station with coffee nearby.
 
 WELCOME_DEBUG = "Debug mode enabled."
 
@@ -77,23 +80,26 @@ class GetStationHandler(AbstractRequestHandler):
         # It makes our lives easier to set these variables at the beginning.
         # To better understand these object, please check out this link:
         # https://developer.amazon.com/docs/custom-skills/request-and-response-json-reference.html
+
+
+
         req_envelope = handler_input.request_envelope
         response_builder = handler_input.response_builder
         service_client_fact = handler_input.service_client_factory
-        template_factory = handler_input.template_factory
+
+        slots = handler_input.request_envelope.request.intent.slots
 
         # Feel free to check out the request.json file generated here so you
         # can get a feel for how the alexa data packet is structured.
-        if debugMode and req_envelope:
+        if debugMode:
             with open('instance/request.json', 'w') as writer:
-                writer.write(str(req_envelope))
+                writer.write(str(slots))
 
         # If the user permissions and consent token are not present, then we
         # need to prompt the user to give us permission in order to access data
         # on their device. debugMode will bypass this check.
         if not (req_envelope.context.system.user.permissions and
-                req_envelope.context.system.user.permissions.consent_token
-                and debugMode):
+                req_envelope.context.system.user.permissions.consent_token):
             response_builder.speak(MISSING_PERMISSIONS)
             response_builder.set_card(
                 AskForPermissionsConsentCard(permissions=permissions))
@@ -101,7 +107,7 @@ class GetStationHandler(AbstractRequestHandler):
 
         # Check for the user's geolocation data first, then device data, then prompt.
         logger.debug("Fetching user's geo-location...")
-        location = parse_geo_loc(req_envelope) if not debugMode else loc_debug
+        location = parse_user_loc(req_envelope) if not debugMode else loc_debug
         if not location:
             logger.debug("Failed to grab geolocation! Checking device address...")
             location = parse_device_loc(req_envelope, service_client_fact)
@@ -111,9 +117,7 @@ class GetStationHandler(AbstractRequestHandler):
 
         # Right now this is a hard-coded filter, but we want to dynamically
         # build it from the user's preferences in the future.
-        filter_list = {'ev_network': 'ChargePoint Network',
-                       'ev_pricing': 'Free',
-                       'radius': '25',
+        filter_list = {'ev_pricing': 'Free',
                        'limit': '25'}
 
         # Fetch a list of charging station based on user's preferences.
@@ -158,6 +162,9 @@ class GetStationHandler(AbstractRequestHandler):
         if debugMode and response_builder.response:
             with open('instance/response.json', 'w') as writer:
                 writer.write(str(response_builder.response))
+
+        # with open('instance/dummy.json', 'r') as json_file:
+        #    data = json.load(json_file)
 
         return response_builder.response
 

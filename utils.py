@@ -66,7 +66,7 @@ def parse_device_loc(req_envelope, service_client_fact):
         raise e
 
 
-def get_station_list(location, filter_list):
+def get_station_list(location, slot_intent, station_filter):
     """ Uses the NREL Developer network to fetch a list of charging stations.
         Visit their site for more info: https://developer.nrel.gov/docs/ """
 
@@ -89,29 +89,6 @@ def get_station_list(location, filter_list):
     # Send GET request and return the response as a JSON object.
     r = requests.get(url = URL, params = PARAMS)
     return r.json()
-
-
-def parse_station_list(station_list):
-    """ Parse the JSON data for each station and remove unused keys. """
-    key_list = ['station_name', 'station_id', 'access_code', 'access_days_time',
-               'station_phone', 'updated_at','latitude', 'longitude', 'city',
-               'intersection_directions', 'state', 'street_address', 'zip',
-               'country', 'ev_connector_types', 'ev_dc_fast_num',
-               'ev_level1_evse_num', 'ev_level2_evse_num', 'ev_network',
-               'ev_pricing', 'ev_network_ids', 'ports', 'distance', 'distance_km']
-
-    parsed_stations = []
-    for s in station_list['fuel_stations']:
-        station = {}
-        for k,v in s.items():
-            if k in key_list:
-                station.update({k:v})
-        logger.debug(station)
-        parsed_stations.append(station)
-        # station = {k:v for k,v in s.items() if k in key_list}
-    logger.debug(parsed_stations)
-
-    return station_list['fuel_stations']
 
 
 def station_filter(station, filter):
