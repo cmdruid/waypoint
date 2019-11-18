@@ -7,7 +7,12 @@ request and construct a response to send back to the alexa service.
 ============================================================================ """
 
 # We need to import some stuff
+<<<<<<< HEAD
 import json
+=======
+import requests, json
+
+>>>>>>> dev/MathewsApproach
 from config import logger, settings
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
@@ -139,10 +144,35 @@ class GetStationHandler(AbstractRequestHandler):
         # Pick the top station. We'll have the user do this later.
         select_station = station_list[1]
 
+        url = "https://api.yelp.com/v3/businesses/search"
+        headers = {'Authorization': 'Bearer 3tndetBH2hPx7pG7GCnkX4ngU20Ubr31oqhQX9z6PEA_zZWKXBsAp0gLRZNj2FzitgEkKwYqsky6GuggN9PgQCEd063T1zZIM8e76604WIEjhe2tWjGOGRw1FQDSXXYx'}
+
+        pref = "Stores"
         address = "{}, {}, {} {}".format(select_station['street_address'],
                                       select_station['city'],
                                       select_station['state'],
                                       select_station['zip'])
+
+        params = {'term': '{}'.format(pref),
+        'location': '{}'.format(address)}
+
+        # Send GET request and return the response as a JSON object.
+        r = requests.get(url=url, params=params, headers=headers)
+        data = r.json()
+
+        threshold = 0.3 * 1609.34
+        avgRate = 0
+        counter = 0
+        
+
+        #Address, Name, Rating
+        for x in data['businesses']:
+            if x['distance'] < threshold and x['location']['address1'] != None and x['location']['address1'] != '' :
+                print("Name: {} \nRating: {}\nLocation: {}\n\n".format(x['alias'],x['rating'], x['location']['address1']))
+                avgRate += x['rating']
+                counter += 1
+        avg = avgRate/counter
+        print('{}'.format(avg))
 
         # Speak to user and send to navigation
         distance = select_station['distance']
@@ -153,7 +183,8 @@ class GetStationHandler(AbstractRequestHandler):
 
         RESULT = ( "The nearest station is {} away. ".format(distance) +
                    "It is a {} {} station {}. ".format(pay, network, hours) +
-                   "The address is {}. ".format(address) +
+                   "The address is {}. ".format(address) + 
+                   "Here is some businesses you can check out while you are there:  "+
                    "I'm sending it to your navigation now.")
 
 
@@ -167,6 +198,7 @@ class GetStationHandler(AbstractRequestHandler):
         #    data = json.load(json_file)
 
         return response_builder.response
+
 
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
