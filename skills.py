@@ -157,13 +157,11 @@ class GetStationHandler(AbstractRequestHandler):
         avgRate = 0
         counter = 0
         
-        businesses = {}
 
         #Address, Name, Rating
         for x in data['businesses']:
             if x['distance'] < threshold and x['location']['address1'] != None and x['location']['address1'] != '' :
                 print("Name: {} \nRating: {}\nLocation: {}\n\n".format(x['alias'],x['rating'], x['location']['address1']))
-                businessses = {x['alias'],x['rating'], x['location']['address1']}
                 avgRate += x['rating']
                 counter += 1
         avg = avgRate/counter
