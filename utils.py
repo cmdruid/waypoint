@@ -66,7 +66,7 @@ def parse_device_loc(req_envelope, service_client_fact):
         raise e
 
 
-def get_station_list(location, filter_list):
+def get_station_list(location, station_filter):
     """ Uses the NREL Developer network to fetch a list of charging stations.
         Visit their site for more info: https://developer.nrel.gov/docs/ """
 
@@ -84,42 +84,28 @@ def get_station_list(location, filter_list):
         PARAMS.update({"latitude": location[0], "longitude": location[1]})
 
     # Add our user-specified paramaters.
-    PARAMS.update(filter_list)
+    PARAMS.update(station_filter)
 
     # Send GET request and return the response as a JSON object.
     r = requests.get(url = URL, params = PARAMS)
     return r.json()
 
 
-def parse_station_list(station_list):
-    """ Parse the JSON data for each station and remove unused keys. """
-    key_list = ['station_name', 'station_id', 'access_code', 'access_days_time',
-               'station_phone', 'updated_at','latitude', 'longitude', 'city',
-               'intersection_directions', 'state', 'street_address', 'zip',
-               'country', 'ev_connector_types', 'ev_dc_fast_num',
-               'ev_level1_evse_num', 'ev_level2_evse_num', 'ev_network',
-               'ev_pricing', 'ev_network_ids', 'ports', 'distance', 'distance_km']
+def get_yelp_results(location, keyword):
+    """ """
+    logger.debug((location,keyword))
+    url = "https://api.yelp.com/v3/businesses/search"
+    headers = {'Authorization': 'Bearer 3tndetBH2hPx7pG7GCnkX4ngU20Ubr31oqhQX9z6PEA_zZWKXBsAp0gLRZNj2FzitgEkKwYqsky6GuggN9PgQCEd063T1zZIM8e76604WIEjhe2tWjGOGRw1FQDSXXYx'}
 
-    parsed_stations = []
-    for s in station_list['fuel_stations']:
-        station = {}
-        for k,v in s.items():
-            if k in key_list:
-                station.update({k:v})
-        logger.debug(station)
-        parsed_stations.append(station)
-        # station = {k:v for k,v in s.items() if k in key_list}
-    logger.debug(parsed_stations)
+    params = {'term': keyword,
+              'location': location,
+              'radius': '840'}
 
-    return station_list['fuel_stations']
+    # Send GET request and return the response as a JSON object.
+    r = requests.get(url=url, params=params, headers=headers)
+    data = r.json()
 
-
-def station_filter(station, filter):
-    """ This is a cool filter function, but we don't need it anymore. """
-    for k,v in filter.items():
-            if station[k] != v:
-                return
-    return station
+    return data
 
 
 def get_distance(point_a, point_b):
@@ -149,20 +135,3 @@ def get_distance(point_a, point_b):
     # sending get request and saving the response as response object
     r = requests.get(url = URL, params = PARAMS)
     return r.json()
-
-
-def convert_to_geo(address):
-    """ Will need this to convert device address to geo coordinates for use
-        with HERE API """
-    return address
-
-def build_station_list(station_data):
-    pass
-
-def navigate_to_station(station_location):
-    pass
-
-        # Find a specific station based on ID
-        # for x in data['fuel_stations']:
-        # if x['id'] == 1517:
-            # print(x['station_name'])

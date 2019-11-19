@@ -7,14 +7,14 @@ request and construct a response to send back to the alexa service.
 ============================================================================ """
 
 # We need to import some stuff
+import requests, json, random
 from config import logger, settings
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 from ask_sdk_core.utils import is_request_type, is_intent_name
 from ask_sdk_model.ui import AskForPermissionsConsentCard
 from ask_sdk_model.services import ServiceException
-from utils import ( parse_user_loc, parse_device_loc, get_station_list,
-                    parse_station_list )
+from utils import ( parse_user_loc, parse_device_loc, get_station_list, get_yelp_results )
 
 
 # Rough implementation of debug mode. Need to refine.
@@ -23,11 +23,11 @@ loc_debug = settings['Debug']['Lat'], settings['Debug']['Long']
 
 # This is where we'll store our response dialogue strings. This is a bad design.
 # We need to move these to a separate file.
-WELCOME_MSG = """ Welcome to my charging station skill. You can say things like,
-           find me the nearest charging station, or Id like to stop at a
-           charging station with coffee nearby. """
+WELCOME_MSG = "Welcome to waypoint."
 
-WELCOME_DEBUG = "Debug mode enabled."
+FIRST_TIME = "What kind of car do you drive?"
+
+WELCOME_DEBUG = "Debug mode."
 
 ASK = "What do you want to ask?"
 
@@ -45,6 +45,13 @@ GOODBYE = "Bye! Thanks for using the Sample Device Address API Skill!"
 UNHANDLED = "This skill doesn't support that. Please ask something else"
 HELP = ("You can use this skill by asking something like: "
         "whats my address?")
+
+
+# Right now this is a hard-coded filter, but we want to dynamically
+# build it from the user's preferences in the future.
+station_filter = {'ev_pricing': 'Free',
+
+               'limit': '10'}
 
 # These are the device permissions we need in order for our skill to work.
 # More information can be found at:
@@ -77,23 +84,28 @@ class GetStationHandler(AbstractRequestHandler):
         # It makes our lives easier to set these variables at the beginning.
         # To better understand these object, please check out this link:
         # https://developer.amazon.com/docs/custom-skills/request-and-response-json-reference.html
+
         req_envelope = handler_input.request_envelope
         response_builder = handler_input.response_builder
         service_client_fact = handler_input.service_client_factory
-        template_factory = handler_input.template_factory
+
+        slots = eval(str(handler_input.request_envelope.request.intent.slots))
+        with open('instance/request.json', 'w') as writer:
+            writer.write(str(slots))
+        slots = [v['value'] for k,v in slots.items() if v['value'] != None]
+        slots = slots[0]
+        logger.debug(slots)
+
 
         # Feel free to check out the request.json file generated here so you
         # can get a feel for how the alexa data packet is structured.
-        if debugMode and req_envelope:
-            with open('instance/request.json', 'w') as writer:
-                writer.write(str(req_envelope))
+
 
         # If the user permissions and consent token are not present, then we
         # need to prompt the user to give us permission in order to access data
         # on their device. debugMode will bypass this check.
         if not (req_envelope.context.system.user.permissions and
-                req_envelope.context.system.user.permissions.consent_token
-                and debugMode):
+                req_envelope.context.system.user.permissions.consent_token):
             response_builder.speak(MISSING_PERMISSIONS)
             response_builder.set_card(
                 AskForPermissionsConsentCard(permissions=permissions))
@@ -101,7 +113,7 @@ class GetStationHandler(AbstractRequestHandler):
 
         # Check for the user's geolocation data first, then device data, then prompt.
         logger.debug("Fetching user's geo-location...")
-        location = parse_geo_loc(req_envelope) if not debugMode else loc_debug
+        location = parse_user_loc(req_envelope) if not debugMode else loc_debug
         if not location:
             logger.debug("Failed to grab geolocation! Checking device address...")
             location = parse_device_loc(req_envelope, service_client_fact)
@@ -109,49 +121,65 @@ class GetStationHandler(AbstractRequestHandler):
                 logger.debug("Failed to grab device location! Prompting user...")
                 response_builder.reprompt(MISSING_LOCATION).getResponse()
 
-        # Right now this is a hard-coded filter, but we want to dynamically
-        # build it from the user's preferences in the future.
-        filter_list = {'ev_network': 'ChargePoint Network',
-                       'ev_pricing': 'Free',
-                       'radius': '25',
-                       'limit': '25'}
-
         # Fetch a list of charging station based on user's preferences.
         logger.debug("Fetching station list...")
-        station_list = get_station_list(location, filter_list)
+        station_list = get_station_list(location, station_filter)
         logger.debug("Station list received. Dumping to JSON.")
         if debugMode and station_list:
             with open('instance/stations.json', 'w') as writer:
                 writer.write(str(station_list))
 
-        # Parse out the junk values that we do not need.
-        logger.debug("Cleaning up station list...")
-        station_list = parse_station_list(station_list)
-        logger.debug("Cleaning complete. Dumping file to disk...")
-        if debugMode and station_list:
-            with open('instance/station_list.json', 'w') as writer:
-                writer.write(str(station_list))
+        rand_index = random.randint(0,2)
+        select_station = station_list['fuel_stations'][rand_index]
+        station_address = "{}, {}, {} {}".format(select_station['street_address'],
+                                                 select_station['city'],
+                                                 select_station['state'],
+                                                 select_station['zip'])
 
         # Pick the top station. We'll have the user do this later.
-        select_station = station_list[1]
+        logger.debug("Fetching yelp results...")
+        yelp_results = get_yelp_results(station_address, slots)
+        logger.debug("Yelp results received!")
 
-        address = "{}, {}, {} {}".format(select_station['street_address'],
-                                      select_station['city'],
-                                      select_station['state'],
-                                      select_station['zip'])
+        # Station Values
+        station_distance = select_station['distance']
+        st_distance = (round(station_distance) + "miles") if station_distance > 1 else "less than a mile"
+        network = select_station["ev_network"] if not "Non" in select_station["ev_network"] else ""
+        port_type = ""
+        port_val = random.randint(1,4)
+        port_max = random.randint(4,9)
+        logger.debug("Station values loaded!")
 
-        # Speak to user and send to navigation
-        distance = select_station['distance']
-        distance = round(distance, 2) if distance > 1 else "less than a mile"
-        network = select_station["ev_network"]
-        pay = "Free" if "Free" in select_station['ev_pricing'] else "Paid"
-        hours = "open 24 hours" if "24" in select_station['access_days_time'] else ""
+        # Nissan Leaf
+        total_range = 200
+        total_battery = 60
+        curr_battery = 0.5
+        # full_charge_time = 25, 11, 0.75
+        # charge_time = full_charge_time[port_type] * curr_battery
+        logger.debug("Car values loaded!")
 
-        RESULT = ( "The nearest station is {} away. ".format(distance) +
-                   "It is a {} {} station {}. ".format(pay, network, hours) +
-                   "The address is {}. ".format(address) +
-                   "I'm sending it to your navigation now.")
+        # Yelp Values
+        rand_index_yelp = random.randint(0,2)
+        top_pick = yelp_results['businesses'][rand_index_yelp]
+        name = top_pick['name']
+        rating = top_pick['rating']
+        yelp_distance = round(top_pick['distance']/84)
+        logger.debug("Yelp values loaded!")
 
+        # Variables in dialogue syntax.
+        # pay = "Free" if "Free" in select_station['ev_pricing'] else "Paid"
+        # hours = "open 24 hours" if "24" in select_station['access_days_time'] else ""
+
+        charge_hours = "{} hours".format(1 + random.randint(1,2))
+        logger.debug("Syntax values loaded!")
+
+        RESULT = ( "The nearest {} station is {} away. ".format(network, st_distance) +
+                   "{} of the {} ports are currently open. ".format(port_val, port_max) +
+                   "It will take about {} of charging to make it home. ".format(charge_hours) +
+                   "I found a place called {}. It is a {} minute walk away. ".format(name, yelp_distance) +
+                   "Are you interested?")
+
+        logger.debug("Dialogue processed!")
 
         response_builder.speak(RESULT).ask("Anything else?")
 

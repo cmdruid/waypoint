@@ -1,5 +1,6 @@
 Flask
+ask_sdk_core
 ask_sdk_webservice_support
 flask-ask-sdk
 requests
-PyYaml-5.1.2
+PyYaml==5.1.2
