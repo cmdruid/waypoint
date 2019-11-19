@@ -1,4 +1,4 @@
-# FindChargingStation
+# Waypoint Alexa Skill
 This project is being developed for the Automobility LA 2019 Hackathon. This project aims to assist drivers of electric vehicles, via voice-guided assistance, with navigation and trip-planning when it comes to charging their vehicle.
 
 ## Introduction
@@ -72,37 +72,6 @@ Will update this in the future.
 ## Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
 
-This project is still in its infancy. I'd appreciate any help with the following:
-
-#### Documentation
-* Writing this readme.md.
-* Putting together links and resources.
-* Formatting this project as a template for others to learn how to build skills with Alexa.
-
-#### Design
-* Put together a feature design doc for the developers to follow.
-* Put together an alexa voice interaction model, with basic dialogue and scripts.
-
-#### Development
-* Check if user has the requested permissions (location services), and what type (mobile or static).
-* If user does not have permissions, request it from user (or guide user to enable them).
-* Remember and save user preferences, and store within a (free!) amazon persistent storage instance.
-* Query API for charging station (based on user preferences!), and return json response as dict.
-* Rate and score station results based on default preferences and user preferences.
-* Query nearby places based on type (food, shopping, etc.) using (google maps?) API, and also use it to rate and score.
-* Figure out how to query current nav destination, then calculate a point between current location and destination.
-
-#### Presentation
-* A basic slide presentation for the hackathon event.
-* A basic dialogue script for the presentation.
-* A planned outline of the presentation, with cues for slides, dialogue and software demo.
-
-#### Collaboration
-* A place for everyone to communicate. (slack?)
-* A kanban board or something to keep track of tasks and push them along.
-* Someone to keep track of contributors and teams, their progress, and what they need help with.
-* Someone to to keep track of issues and roadblocks. Either on github or another kanban board.
-
 ## Versioning
 I plan to use [SemVer](http://semver.org/) for versioning at some point in the future.
 
@@ -110,4 +79,9 @@ I plan to use [SemVer](http://semver.org/) for versioning at some point in the f
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Acknowledgments
-Will update this in the future!
+I want to give a big thanks, from the bottom of my heart, to my wonderful team memebers that assisted with the design, development, and presentation of this project. Despite the lack of sleep and technical difficults, everyone came together and contributed to make something memorable.
+
+* Atria Azarmi
+* Carl Johan Langberg Madsen
+* Hayley Williams
+* Mathew Nuval
