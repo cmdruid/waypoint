@@ -79,9 +79,9 @@ I plan to use [SemVer](http://semver.org/) for versioning at some point in the f
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Acknowledgments
-I want to give a big thanks, from the bottom of my heart, to my wonderful team memebers that assisted with the design, development, and presentation of this project. Despite the lack of sleep and technical difficults, everyone came together and contributed to make something memorable.
+I want to give a big thanks, from the bottom of my heart, to my wonderful team memebers that assisted with the design, development, and presentation of this project. Despite the lack of sleep and technical difficulties, everyone came together and contributed to make something memorable.
 
 * Atria Azarmi
 * Carl Johan Langberg Madsen
 * Hayley Williams
-* Mathew Nuval
+* [Mathew Nuval](https://github.com/MattJNuval)
